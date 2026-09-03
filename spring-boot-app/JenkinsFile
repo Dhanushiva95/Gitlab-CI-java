@@ -1,9 +1,9 @@
 pipeline {
   agent {
     docker {
-      // 🚀 Replaced with the official, modern Maven image running Java 21
+      // Official Maven container running Java 21 on Ubuntu (Fixes GLIBC & compilation version mismatches)
       image 'maven:3.9.6-eclipse-temurin-21-jammy'
-      // Mount host's Docker socket and tool binary securely
+      // Mount the host's Docker socket and tool binary securely
       args '--user root -v /var/run/docker.sock:/var/run/docker.sock -v /usr/bin/docker:/usr/bin/docker'
     }
   }
@@ -18,7 +18,7 @@ pipeline {
     stage('Build and Test') {
       steps {
         sh 'ls -ltr'
-        // Build the project and create a JAR file
+        // Build the project and create a JAR file using Maven
         sh 'cd spring-boot-app && mvn clean package'
       }
     }
@@ -37,7 +37,8 @@ pipeline {
 
     stage('Build and Push Docker Image') {
       environment {
-        DOCKER_IMAGE = "abhishekf5/ultimate-cicd:${BUILD_NUMBER}"
+        // 🚀 FIXED: Set to your verified Docker Hub username to prevent 'access denied' failure
+        DOCKER_IMAGE = "dhanushiva/ultimate-cicd:${BUILD_NUMBER}"
         REGISTRY_CREDENTIALS = credentials('docker-cred')
       }
       steps {
