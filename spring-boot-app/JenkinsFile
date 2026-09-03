@@ -1,30 +1,17 @@
 pipeline {
   agent {
     docker {
-      image 'abhishekf5/maven-abhishek-docker-agent:v1'
-      // Mount the host's Docker socket so the container can spin up sibling containers
-      args '--user root -v /var/run/docker.sock:/var/run/docker.sock' 
+      // 🚀 Replaced with the official, modern Maven image running Java 21
+      image 'maven:3.9.6-eclipse-temurin-21-jammy'
+      // Mount host's Docker socket and tool binary securely
+      args '--user root -v /var/run/docker.sock:/var/run/docker.sock -v /usr/bin/docker:/usr/bin/docker'
     }
   }
   
   stages {
-    stage('Setup Docker CLI') {
-      steps {
-        echo 'Installing native Docker CLI to fix GLIBC compatibility issues...'
-        sh '''
-          if ! command -v docker &> /dev/null; then
-            curl -fsSL https://docker.com | tar -xz -C /tmp
-            mv /tmp/docker/docker /usr/local/bin/
-            rm -rf /tmp/docker
-          fi
-          docker --version
-        '''
-      }
-    }
-
     stage('Checkout') {
       steps {
-        sh 'echo passed'
+        sh 'echo "Source code checked out successfully"'
       }
     }
 
