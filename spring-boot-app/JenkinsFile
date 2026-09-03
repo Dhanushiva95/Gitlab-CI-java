@@ -66,8 +66,8 @@ pipeline {
                     sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" spring-boot-app-manifests/deployment.yml
                     git add spring-boot-app-manifests/deployment.yml
                     git commit -m "Update deployment image to version ${BUILD_NUMBER}"
-                    # 🚀 FIXED: Corrected the Git URL formatting and added missing $ sign
-                    git push https://${GITHUB_TOKEN}@://github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git HEAD:main
+                    # 🚀 FIXED: Removed the extra :// to fix the illegal URL format error
+                    git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git HEAD:main
                 '''
             }
         }
