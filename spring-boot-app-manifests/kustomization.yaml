@@ -5,4 +5,4 @@ resources:
 images:
 - name: dhanushiva/ultimate-cicd
   newName: dhanushiva/ultimate-cicd
-  newTag: "30"
+  newTag: "31"
