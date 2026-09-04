@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: spring-boot-app-service
-  namespace: default # Change this to your desired app namespace (e.g., default, dev, prod)
+  namespace: argocd
 spec:
   type: NodePort
   ports:
