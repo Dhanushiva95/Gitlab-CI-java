@@ -50,6 +50,8 @@ pipeline {
       }
     }
 
+    Groovy
+
     stage('Update Deployment File') {
       environment {
         GIT_REPO_NAME = "Gitlab-CI-java"
@@ -60,14 +62,25 @@ pipeline {
           sh '''
             git config user.email "dsalert364@gmail.com"
             git config user.name "DSalert"
-            BUILD_NUMBER=${BUILD_NUMBER}
-            sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" spring-boot-app-manifests/deployment.yml
+            
+            # 1. Ensure we are on main branch and synced with remote
+            git checkout main || git checkout -b main
+            git pull origin main
+
+            # 2. Replaces 'replaceImageTag' OR any existing image tag dynamically
+            sed -i -E "s|(dhanushiva/ultimate-cicd:)[^ \"']*|\\1${BUILD_NUMBER}|g" spring-boot-app-manifests/deployment.yml
+
             git add spring-boot-app-manifests/deployment.yml
-            git commit -m "Update deployment image to version ${BUILD_NUMBER}"
-            git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git HEAD:main
+
+            # 3. Only commit and push if changes exist
+            if ! git diff --cached --quiet; then
+              git commit -m "Update deployment image to version ${BUILD_NUMBER}"
+              git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git HEAD:main
+            else
+              echo "No change in deployment.yml (Image tag is already ${BUILD_NUMBER})"
+            fi
           '''
         }
       }
     }
-  }
 }
