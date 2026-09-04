@@ -1,7 +1,8 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - deployment.yml
+- deployment.yml
 images:
-  - name: dhanushiva/ultimate-cicd
-    newTag: "1"
+- name: dhanushiva/ultimate-cicd
+  newName: dhanushiva/ultimate-cicd
+  newTag: "21"
