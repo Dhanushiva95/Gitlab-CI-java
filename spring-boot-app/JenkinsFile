@@ -2,15 +2,13 @@ pipeline {
   agent {
     docker {
       image 'maven:3.9.6-eclipse-temurin-21-jammy'
-      args '-u root -v /var/run/docker.sock:/var/run/docker.sock -v /usr/bin/docker:/usr/bin/docker'
+      args '--user root -v /var/run/docker.sock:/var/run/docker.sock -v /usr/bin/docker:/usr/bin/docker'
     }
   }
-
+  
   stages {
     stage('Checkout') {
       steps {
-        cleanWs() // Prevents workspace corruption & 'fatal: not in a git directory'
-        checkout scm
         sh 'echo "Source code checked out successfully"'
       }
     }
@@ -28,7 +26,7 @@ pipeline {
       }
       steps {
         withCredentials([string(credentialsId: 'sonarauthtoken', variable: 'SONAR_AUTH_TOKEN')]) {
-          sh 'cd spring-boot-app && mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.token=${SONAR_AUTH_TOKEN} -Dsonar.host.url=${SONAR_URL}'
+          sh 'cd spring-boot-app && mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.login=${SONAR_AUTH_TOKEN} -Dsonar.host.url=${SONAR_URL}'
         }
       }
     }
@@ -62,23 +60,11 @@ pipeline {
           sh '''
             git config user.email "dsalert364@gmail.com"
             git config user.name "DSalert"
-            
-            # Switch off detached HEAD to push directly to main
-            git checkout main || git checkout -b main
-            git pull origin main
-
-            # Regex replacement: updates 'replaceImageTag' OR any previous build number automatically
-            sed -i -E "s|(dhanushiva/ultimate-cicd:)[^ "']*|\\1${BUILD_NUMBER}|g" spring-boot-app-manifests/deployment.yml
-
+            BUILD_NUMBER=${BUILD_NUMBER}
+            sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" spring-boot-app-manifests/deployment.yml
             git add spring-boot-app-manifests/deployment.yml
-
-            # Safely commit and push only if changes were made
-            if ! git diff --cached --quiet; then
-              git commit -m "Update deployment image to version ${BUILD_NUMBER}"
-              git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git HEAD:main
-            else
-              echo "No changes detected in deployment.yml"
-            fi
+            git commit -m "Update deployment image to version ${BUILD_NUMBER}"
+            git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git HEAD:main
           '''
         }
       }
