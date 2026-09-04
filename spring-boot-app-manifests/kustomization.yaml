@@ -3,7 +3,7 @@ kind: Kustomization
 
 resources:
 - deployment.yml
-- service.yaml
+- service.yml
 
 images:
 - name: dhanushiva/ultimate-cicd
