@@ -20,4 +20,5 @@ spec:
         image: dhanushiva/ultimate-cicd:8
         ports:
         - containerPort: 8080
+        
 
