@@ -17,7 +17,7 @@ spec:
       containers:
       - name: spring-boot-app
         # 🚀 FIXED: Changed repository prefix to match your pushed Docker Hub directory
-        image: dhanushiva/ultimate-cicd:replaceImageTag
+        image: dhanushiva/ultimate-cicd:8
         ports:
         - containerPort: 8080
 
