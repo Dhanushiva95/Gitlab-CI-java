@@ -8,4 +8,4 @@ resources:
 images:
 - name: dhanushiva/ultimate-cicd
   newName: dhanushiva/ultimate-cicd
-  newTag: "90"
+  newTag: "91"
